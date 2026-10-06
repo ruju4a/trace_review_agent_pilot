@@ -1,0 +1,62 @@
+You are acting as an independent code reviewer in a controlled experiment.
+
+Review only the information supplied in this prompt. Do not assume hidden test results or hidden ground truth.
+Decide whether the patch should be APPROVED or REJECTED.
+
+Return ONLY valid JSON with exactly these keys:
+{
+  "decision": "APPROVE" or "REJECT",
+  "defects": ["short defect description", "..."],
+  "explanation": "brief explanation grounded in the supplied evidence"
+}
+
+Do not include markdown around the JSON.
+
+
+## Issue / task
+Parser fails on nested expressions. Update parsing so nested expressions are handled correctly.
+
+## Proposed patch
+```diff
+--- a/src/parser.py
++++ b/src/parser.py
+@@
+-old
++new
+
+```
+
+
+## Additional coding-agent trajectory context
+### Task intent / rationale-related context
+Parser fails on nested expressions. Update parsing so nested expressions are handled correctly.
+
+_Note: Use task intent plus observable action changes; this starter does not treat model reasoning text as ground-truth rationale._
+
+### Context explored by the coding agent
+- src/parser.py
+- tests/test_parser.py
+
+Unique path-like references observed: 2
+
+### Validation activity observed
+- pytest tests/test_parser.py FAILED: nested expression
+- pytest tests/test_parser.py PASSED
+
+Failure-like observations in trace: 1
+Success-like observations in trace: 1
+Generated tests judged correct by dataset: 1
+Agent patch passes generated tests: 1
+
+### Rework / alternative-attempt signals
+Repeated/revisited paths:
+- src/parser.py
+- tests/test_parser.py
+
+Edit activity examples:
+- apply_patch src/parser.py
+- Revisit src/parser.py and apply_patch src/parser.py
+
+_Note: Repeated edits are only a proxy for rework/alternative attempts; manually inspect before claiming an alternative solution was tried._
+
+Make an independent review decision now.

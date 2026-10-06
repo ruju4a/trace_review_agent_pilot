@@ -1,0 +1,10 @@
+[project]
+name = "trace-assisted-code-review"
+version = "0.1.0"
+description = "Controlled experiments on trajectory-assisted review of agent patches"
+requires-python = ">=3.10"
+dependencies = ["datasets>=3.0,<5", "openai>=2.0,<3"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

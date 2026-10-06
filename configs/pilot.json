@@ -1,0 +1,7 @@
+{
+  "cases": "data/pilot.jsonl",
+  "conditions": ["control", "full"],
+  "repeats": 3,
+  "seed": 42,
+  "out": "outputs/pilot.jsonl"
+}

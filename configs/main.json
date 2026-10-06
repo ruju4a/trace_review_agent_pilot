@@ -1,0 +1,7 @@
+{
+  "cases": "data/main.jsonl",
+  "conditions": ["control", "full"],
+  "repeats": 3,
+  "seed": 2026,
+  "out": "outputs/main.jsonl"
+}

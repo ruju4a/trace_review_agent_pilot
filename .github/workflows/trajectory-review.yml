@@ -1,0 +1,43 @@
+name: Agent trajectory review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      # Execute the base version of the reporter, never code supplied by the PR.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Read PR diff and trace as data
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p /tmp/trajectory-review
+          git fetch --no-tags origin "refs/pull/${PR_NUMBER}/head"
+          test "$(git rev-parse FETCH_HEAD)" = "$HEAD_SHA"
+          git diff "$BASE_SHA" "$HEAD_SHA" -- . ':!.agent/trajectory.json' > /tmp/trajectory-review/patch.diff
+          if git cat-file -e "$HEAD_SHA:.agent/trajectory.json" 2>/dev/null; then
+            size=$(git cat-file -s "$HEAD_SHA:.agent/trajectory.json")
+            test "$size" -le 10000000
+            git show "$HEAD_SHA:.agent/trajectory.json" > /tmp/trajectory-review/trajectory.json
+          fi
+      - name: Build human report and reviewer-agent prompts
+        run: |
+          python -m src.pr_report --event "$GITHUB_EVENT_PATH" --patch /tmp/trajectory-review/patch.diff --trace /tmp/trajectory-review/trajectory.json --out /tmp/trajectory-review/report
+          cat /tmp/trajectory-review/report/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trajectory-review-${{ github.event.pull_request.number }}
+          path: /tmp/trajectory-review/report/
+          retention-days: 14
